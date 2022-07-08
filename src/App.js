@@ -27,13 +27,25 @@ function App() {
       //no matter if .success or .catch runs, .finally will always run
       .finally(() => setLoading(false))
   }
+  //conditionally render data
+  const renderUI = () => {
+    if (loading)
+      return <Spinner />
+    else if (error) 
+      return <p className='error'>{error}</p>
+    else if (pokemon)
+      return <PokemonDetails pokemon={pokemon}/>
+    else if (!searchTerm)
+      return <p>Search a pokemon to get started.</p>
+    else 
+      return null
+  }
 
   return (
     <>
     <Header />
     <SearchForm />
-    <PokemonDetails />
-    <Spinner />
+    { renderUI() }
     </>
   );
 }
