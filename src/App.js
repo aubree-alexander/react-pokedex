@@ -17,16 +17,38 @@ function App() {
     getPokemon()
   }, [])
 
-  const getPokemon = () =>{
+  const getPokemon = () => {
+    setError(null)
     setLoading(true)
     fetch(`https://pokeapi.co/api/v2/pokemon/${searchTerm}`)
       .then(res => res.json())
-      //save data into state
       .then(json => setPokemon(json))
-      .catch(err => setError('Pokemon not found.'))
-      //no matter if .success or .catch runs, .finally will always run
+      .catch(err => {
+        setError('Pokemon not found')
+        setPokemon(null)
+        setSearchTerm('')
+      })
       .finally(() => setLoading(false))
   }
+
+  const handleInputChange = e => {
+    setSearchTerm(e.target.value)
+  }
+
+  const handleFormSubmit = e => {
+    e.preventDefault()
+    // !! looks for truthy values
+    if (!!searchTerm) {
+      getPokemon()
+    }
+  }
+
+  const reset = () => {
+    setSearchTerm('')
+    setError(null)
+    setPokemon(null)
+  }
+
   //conditionally render data
   const renderUI = () => {
     if (loading)
@@ -44,7 +66,12 @@ function App() {
   return (
     <>
     <Header />
-    <SearchForm />
+    <SearchForm 
+      searchTerm={searchTerm}
+      handleInputChange={handleInputChange}
+      handleFormSubmit={handleFormSubmit}
+      reset={reset}
+    />
     { renderUI() }
     </>
   );
